@@ -1,26 +1,35 @@
 <template>
   <div>
-   
-  </div>
-</template>
+    <main-tab-bar/>
+    <keep-alive>
+      <router-view />
+    </keep-alive>
 
+  </div>
+
+</template>
 <script>
+
 import { request } from "./network/request";
+
+import MainTabBar from "components/content/mainTabbar/MainTabBar";
+
 export default {
   name: "App",
-  data() {
-    return{
-      message: "",
-    }  
+  components:{
+    MainTabBar,
+
   },
-  created() {
-   
-    }
-    
+  data() {
+    return {
+      message: "",
+    };
+  },
+
+  created() {},
 };
 </script>
 
 <style scoped>
-@import './assets/css/base.css'
-
+@import "./assets/css/base.css";
 </style>
