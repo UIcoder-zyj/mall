@@ -1,6 +1,6 @@
 <template>
   <div>
-    <main-tab-bar/>
+    <main-tab-bar class='main-tab-bar'/>
     <keep-alive>
       <router-view />
     </keep-alive>
@@ -32,4 +32,7 @@ export default {
 
 <style scoped>
 @import "./assets/css/base.css";
+.main-tab-bar{
+  z-index: 10;
+}
 </style>

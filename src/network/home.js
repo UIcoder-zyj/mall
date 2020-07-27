@@ -9,7 +9,7 @@ import {request} from './request'
 //     })
 // }
 
-export class HomeRequestHandler{
+ export class HomeRequestHandler{
     constructor(){
         this.BANNER='banner',
         this.RECOMMEND = 'recommend'
@@ -20,8 +20,17 @@ export class HomeRequestHandler{
             url: '/home/multidata'
         })
     }
-}
 
+    getHomeGoods(type,page){
+        return request({
+            url: '/home/data',
+            params:{
+                type,
+                page
+            }
+        })
+    }
+}
 // module.exports={
 //     HomeHandler
 // }
