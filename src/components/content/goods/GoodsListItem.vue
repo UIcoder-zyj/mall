@@ -1,6 +1,6 @@
 <template>
   <div class="goods-item" @click="goToDetail">
-    <img v-lazy="getImg" :key="getImg" alt='' />
+    <img v-lazy="getImg" :key="getImg.src" alt @load="imageLoad()" />
     <div class="goods-item-info">
       <p>{{goodsItem.title}}</p>
       <span class="price">¥{{goodsItem.price}}</span>
@@ -26,7 +26,10 @@ export default {
       let iid = this.goodsItem.iid;
 
       // 2.跳转到详情页面
-    //  this.$router.push({ path: "/detail", query: { iid } });
+      //  this.$router.push({ path: "/detail", query: { iid } });
+    },
+    imageLoad() {
+      this.$bus.$emit("itemImageLoad");
     },
   },
   computed: {

@@ -3,31 +3,41 @@
     <nav-bar class="home-nav">
       <div slot="center">购物街</div>
     </nav-bar>
-    <scroll class='content' ref='scroll' :probe-type='3' @scroll='contentScroll'>
-      <home-swiper :banners="banners" />
+    <scroll
+      class="content"
+      ref="scroll"
+      :probe-type="3"
+      @scroll="contentScroll"
+      :pull-up-load="true"
+      @pullingUp="loadMore"
+    >
+      <home-swiper :banners="banners"  
+                    @swiperImageLoad='swiperImageLoad'/>
       <recommend-view :recommends="recommends" />
       <feature-view />
-      <tab-control  class="home-tab-control"
-                    @itemClick="tabClick"
-                    :titles="['流行','新款','精选']" />
-      <goods-list :goods="showGoods"/>
+      <tab-control class="home-tab-control" 
+                   @itemClick="tabClick" 
+                   :titles="['流行','新款','精选']" 
+                    ref='tabControl'
+                    />
+      <goods-list :goods="showGoods" />
     </scroll>
     <!-- native 赋予了自定义组件dom对象原有的事件 -->
-    <back-top @click.native='backClick' v-show='isShowBackTop'/>
+    <back-top @click.native="backClick" v-show="isShowBackTop" />
   </div>
 </template>
 
 <script>
+import {debounce} from 'common/utils.js'
 import NavBar from "components/common/navbar/NavBar";
 import TabControl from "components/content/tabControl/TabControl";
 import GoodsList from "components/content/goods/GoodsList";
-import Scroll  from 'components/common/scroll/Scroll'
+import Scroll from "components/common/scroll/Scroll";
 import BackTop from "components/content/backtop/BackTop";
 
 import HomeSwiper from "./childComps/HomeSwiper";
 import RecommendView from "./childComps/RecommendView";
 import FeatureView from "./childComps/FeatureView";
-
 
 import { HomeRequestHandler } from "network/home";
 import { BACKTOP_DISTANCE, POP, NEW, SELL } from "common/const";
@@ -43,7 +53,7 @@ export default {
     FeatureView,
     GoodsList,
     Scroll,
-    BackTop
+    BackTop,
   },
   data() {
     return {
@@ -57,15 +67,14 @@ export default {
         sell: { page: 0, list: [] },
       },
       currentType: POP,
-      isShowBackTop:false
+      isShowBackTop: false,
+      tabOffestTop: 0
     };
   },
   computed: {
     showGoods() {
       return this.goods[this.currentType].list;
     },
- 
-
   },
   methods: {
     getMultiData() {
@@ -85,7 +94,8 @@ export default {
       homeRequestHandler.getHomeGoods(type, page).then((res) => {
         this.goods[type].list.push(...res.data.data.list);
         this.goods[type].page++;
-        console.log("类型为:", type, "  总共有==>", this.goods[type]);
+        // console.log("类型为:", type, "  总共有==>", this.goods[type]);
+        this.$refs.scroll.finishedPullUp();
       });
     },
     tabClick(index) {
@@ -105,14 +115,20 @@ export default {
           break;
       }
     },
-    backClick(){
-      this.$refs.scroll.scrollTo(0,0,600);
+    backClick() {
+      this.$refs.scroll.scrollTo(0, 0, 600);
       //这也行，不过这样是直接使用better-scroll方法，以后替换scroll框架的时候得到处找代码修改不好
-    //  this.$refs.scroll.scroll.scrollTo(0,0,600);
+      //  this.$refs.scroll.scroll.scrollTo(0,0,600);
     },
-    contentScroll(position){
-      const result=(position.y < -1000);
-      this.isShowBackTop=result;
+    contentScroll(position) {
+      const result = position.y < -1000;
+      this.isShowBackTop = result;
+    },
+    loadMore() {
+      this.getHomeGoods(this.currentType);
+    },
+    swiperImageLoad(){
+      this.tabOffsetTop=this.$refs.tabControl.$el.offsetTop); 
     }
   },
   created() {
@@ -120,6 +136,13 @@ export default {
     this.getHomeGoods(POP);
     this.getHomeGoods(NEW);
     this.getHomeGoods(SELL);
+  },
+  mounted() {
+    const refresh=debounce(this.$refs.scroll.refresh,200)
+    this.$bus.$on("itemImageLoad", () => {
+      refresh();
+    });
+    console.log(this.$refs.tabControl);
   },
 };
 </script>
