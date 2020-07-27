@@ -42,6 +42,7 @@ export default {
 <style scoped>
 .goods-item {
   padding-bottom: 40px;
+  /* width: 48%; */
   position: relative;
 }
 .goods-item img {

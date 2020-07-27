@@ -29,7 +29,7 @@ export default {
   },
   methods: {
     itemClick(index) {
-    //  this.emit
+      this.$emit('itemClick',index);
       this.currentIndex = index;
     },
   },

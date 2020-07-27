@@ -14,19 +14,19 @@ export default {
     },
     hMargin: {
       type: Number,
-      default: 8,
+      default: 5,
     },
     vMargin: {
       type: Number,
-      default: 8,
+      default: 5,
     },
     itemSpace: {
       type: Number,
-      default: 8,
+      default: 5,
     },
     lineSpace: {
       type: Number,
-      default: 8,
+      default: 5,
     },
   },
   mounted: function () {
