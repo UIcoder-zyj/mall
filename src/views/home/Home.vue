@@ -93,7 +93,7 @@ export default {
       homeRequestHandler.getHomeMultiData().then((res) => {
         this.banners = res.data.data[homeRequestHandler.BANNER].list;
         this.recommends = res.data.data[homeRequestHandler.RECOMMEND].list;
-
+        console.log(res);
         // 下次更新DOM时,获取新的tabOffsetTop值(不保险,可以在updated钩子中获取)
         // this.$nextTick(() => {
         //   this.tabOffsetTop = this.$refs.tabControl.$el.offsetTop;
@@ -106,6 +106,8 @@ export default {
         this.goods[type].list.push(...res.data.data.list);
         this.goods[type].page++;
         this.$refs.scroll.finishedPullUp();
+                console.log(res);
+
       });
     },
     tabClick(index) {
