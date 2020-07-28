@@ -3,6 +3,12 @@
     <nav-bar class="home-nav">
       <div slot="center">购物街</div>
     </nav-bar>
+     <tab-control class="tab-control" 
+                  v-show='isTabFixed'
+                   @itemClick="tabClick" 
+                   :titles="['流行','新款','精选']" 
+                    ref='tabControl1'
+                    />
     <scroll
       class="content"
       ref="scroll"
@@ -15,10 +21,9 @@
                     @swiperImageLoad='swiperImageLoad'/>
       <recommend-view :recommends="recommends" />
       <feature-view />
-      <tab-control class="home-tab-control" 
-                   @itemClick="tabClick" 
+      <tab-control @itemClick="tabClick" 
                    :titles="['流行','新款','精选']" 
-                    ref='tabControl'
+                    ref='tabControl2'
                     />
       <goods-list :goods="showGoods" />
     </scroll>
@@ -68,7 +73,14 @@ export default {
       },
       currentType: POP,
       isShowBackTop: false,
-      tabOffestTop: 0
+      tabOffestTop: 0,
+      isTabFixed: false,
+      loadOffset: {
+        type: Number,
+        default(){
+          return 0;
+        }
+      }
     };
   },
   computed: {
@@ -79,7 +91,6 @@ export default {
   methods: {
     getMultiData() {
       homeRequestHandler.getHomeMultiData().then((res) => {
-        console.log(res);
         this.banners = res.data.data[homeRequestHandler.BANNER].list;
         this.recommends = res.data.data[homeRequestHandler.RECOMMEND].list;
 
@@ -94,7 +105,6 @@ export default {
       homeRequestHandler.getHomeGoods(type, page).then((res) => {
         this.goods[type].list.push(...res.data.data.list);
         this.goods[type].page++;
-        // console.log("类型为:", type, "  总共有==>", this.goods[type]);
         this.$refs.scroll.finishedPullUp();
       });
     },
@@ -113,23 +123,37 @@ export default {
           this.currentType = POP;
 
           break;
-      }
+      };
+      this.$refs.tabControl1.currentIndex=index;
+      this.$refs.tabControl2.currentIndex=index;
+
     },
     backClick() {
       this.$refs.scroll.scrollTo(0, 0, 600);
+      this.$refs.scroll.refresh();
       //这也行，不过这样是直接使用better-scroll方法，以后替换scroll框架的时候得到处找代码修改不好
       //  this.$refs.scroll.scroll.scrollTo(0,0,600);
     },
     contentScroll(position) {
-      const result = position.y < -1000;
-      this.isShowBackTop = result;
+      /***********backtop跟踪*************/
+      const showBackTopResult = position.y < -1000;
+      this.isShowBackTop = showBackTopResult;    
+      this.isTabFixed= (-position.y)>this.tabOffsetTop
     },
     loadMore() {
       this.getHomeGoods(this.currentType);
+      
     },
     swiperImageLoad(){
-      this.tabOffsetTop=this.$refs.tabControl.$el.offsetTop); 
+      this.tabOffsetTop=this.$refs.tabControl2.$el.offsetTop; 
     }
+  },
+  activated(){  
+    this.$refs.scroll.scrollTo(0, this.loadOffset, 10);  
+    this.$refs.scroll.refresh();
+  },
+   deactivated(){
+    this.loadOffset=this.$refs.scroll.getScroll();
   },
   created() {
     this.getMultiData();
@@ -142,32 +166,33 @@ export default {
     this.$bus.$on("itemImageLoad", () => {
       refresh();
     });
-    console.log(this.$refs.tabControl);
   },
 };
 </script>
 
 <style scoped>
 #home {
-  padding-top: 44px;
+  /* padding-top: 44px; */
   height: 100vh;
   position: relative;
 }
 .home-nav {
   background-color: var(--color-tint);
   color: #fff;
-  position: fixed;
+  /* position: fixed;
   left: 0;
   right: 0;
   top: 0;
-  z-index: 9;
+  z-index: 9; */
 }
-.home-tab-control {
-  /****网页没有效果 */
-  position: sticky;
-  top: 44px;
+.tab-control {
+  /****由于better-scroll中translate依然改变fixed属性的位置因此设置成fixed属性
+  仍然不行因而网页没有效果 */
+  position: relative;
   z-index: 9;
+  background-color: #fff;
 }
+
 .content {
   overflow: hidden;
   position: absolute;

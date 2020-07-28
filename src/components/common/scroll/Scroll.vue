@@ -50,11 +50,14 @@ export default {
     scrollTo(x, y, time = 500) {
       this.scroll && this.scroll.scrollTo(x, y, time);
     },
-    finishedPullUp() {
-      this.scroll.finishPullUp();
-    },
     refresh() {
       this.scroll && this.scroll.refresh();
+    },
+    getScroll(){
+      return this.scroll ? this.scroll.y: 0;
+    },
+    finishedPullUp() {
+      this.scroll.finishPullUp();
     },
   },
 };
