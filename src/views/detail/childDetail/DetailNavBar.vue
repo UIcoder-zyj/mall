@@ -1,3 +1,11 @@
+<!--
+ * @Descripttion:
+ * @version: 1.0.0
+ * @Author: zyj
+ * @Date: 2020-07-28 17:50:45
+ * @LastEditors: zyj
+ * @LastEditTime: 2020-07-30 16:20:08
+-->
 <template>
   <div>
     <nav-bar class="detail-nav">
@@ -25,7 +33,7 @@ export default {
     titles:{
       type: Array,
       default(){
-        return [];  
+        return [];
       }
     }
   },
@@ -38,8 +46,10 @@ export default {
 </script>
 
 <style scoped>
-.tab-control{
+.detail-nav{
   background-color: #fff;
+  position : relative;
+  z-index: 9;
 }
 .back{
   height:44px;
